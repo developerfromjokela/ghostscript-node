@@ -108,6 +108,18 @@ async function rotatePDF(pdfBuffer, direction) {
   }
 }
 
+async function removeImages(pdfBuffer) {
+  try {
+    return await useTempFilesPDFInOut(pdfBuffer, async (input, output) => {
+
+      await exec(`gs -q -dNOPAUSE -sDEVICE=pdfwrite -dBATCH -dFILTERVECTOR -dFILTERIMAGE -sOutputFile=${output} ${input}`,);
+    });
+  } catch (e) {
+    throw new Error('Failed to remove images from PDF: ' + e.message);
+  }
+}
+
+
 /**
  * If `firstPage` is not given, 1 is used.
  * If `lastPage` is not given, the document's last page is used.
@@ -168,4 +180,5 @@ module.exports = {
   rotatePDF,
   renderPDFPagesToPNG,
   isValidPDF,
+  removeImages
 };
